@@ -20,6 +20,7 @@ const allowedOrigins = [
   "https://arvik1982.github.io",
   "https://Arvik1982.github.io",
   "https://about-me-api.onrender.com",
+  "https://about-me-api-vxmu.onrender.com",
   process.env.FRONTEND_URL,
 ].filter(Boolean);
 
