@@ -1,0 +1,34 @@
+.dots {
+  display: flex;
+  gap: 8px;
+  padding: 8px;
+}
+
+.dot {
+  width: 8px;
+  height: 8px;
+  background-color: #9ca3af;
+  border-radius: 50%;
+  animation: bounce 1.4s ease-in-out infinite;
+}
+
+.dot:nth-child(1) {
+  animation-delay: 0ms;
+}
+.dot:nth-child(2) {
+  animation-delay: 150ms;
+}
+.dot:nth-child(3) {
+  animation-delay: 300ms;
+}
+
+@keyframes bounce {
+  0%,
+  60%,
+  100% {
+    transform: translateY(0);
+  }
+  30% {
+    transform: translateY(-12px);
+  }
+}
