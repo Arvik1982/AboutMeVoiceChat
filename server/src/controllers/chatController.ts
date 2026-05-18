@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { openai, generateSystemPrompt } from "../config/openai.js";
+import { openai, generateSystemPrompt, ProfileData } from "../config/openai.js";
 import { profileData } from "./profileController.js";
 
 export const sendMessage = async (req: Request, res: Response) => {
@@ -10,7 +10,7 @@ export const sendMessage = async (req: Request, res: Response) => {
       return res.status(400).json({ error: "Message is required" });
     }
 
-    const systemPrompt = generateSystemPrompt(profileData);
+    const systemPrompt = generateSystemPrompt(profileData as ProfileData);
 
     const completion = await openai.chat.completions.create({
       model: process.env.OPENROUTER_MODEL || "openrouter/free",
