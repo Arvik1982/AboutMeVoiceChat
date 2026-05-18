@@ -169,3 +169,4 @@ console.log(`Using model: ${OPENAI_CONFIG.model}`);
 console.log(
   `system prompt will be injected with real profile data at request time`,
 );
+export type { ProfileData };
