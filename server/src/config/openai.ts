@@ -4,7 +4,7 @@ import dotenv from "dotenv";
 dotenv.config();
 
 if (!process.env.OPENROUTER_API_KEY) {
-  console.error("OPENROUTER_API_KEY is not set in .env file");
+  console.error("❌ OPENROUTER_API_KEY is not set in .env file");
   process.exit(1);
 }
 
@@ -13,11 +13,70 @@ export const openai = new OpenAI({
   baseURL: process.env.OPENROUTER_BASE_URL || "https://openrouter.ai/api/v1",
   defaultHeaders: {
     "HTTP-Referer": process.env.SITE_URL || "http://localhost:5173",
-    "X-Title": "Arseny Kulikov - Portfolio",
+    "X-Title": "Arseniy Kulikov - Portfolio",
   },
 });
 
-export const generateSystemPrompt = (profileData: any) => {
+interface WorkExperience {
+  company: string;
+  period: string;
+  position: string;
+  achievements: string[];
+}
+
+interface Project {
+  title: string;
+  description: string;
+}
+
+interface Education {
+  institution: string;
+  year: string;
+  degree: string;
+  field: string;
+}
+
+interface Course {
+  name: string;
+  year: string;
+  specialization: string;
+}
+
+interface Language {
+  name: string;
+  level: string;
+}
+
+interface ProfileData {
+  hero: {
+    name: string;
+    age: number;
+    birthDate: string;
+    title: string;
+    experience: string;
+    location: string;
+    relocation: string;
+  };
+  techStack: string[];
+  workExperience: WorkExperience[];
+  projects: Project[];
+  education: Education[];
+  courses: Course[];
+  languages: Language[];
+  approach: {
+    development: string[];
+    aiTools: string[];
+  };
+  interests: string[];
+  social: {
+    github: string;
+    telegram: string;
+    email: string;
+    phone: string;
+  };
+}
+
+export const generateSystemPrompt = (profileData: ProfileData): string => {
   if (!profileData) {
     return `Ты AI ассистент на сайте-портфолио разработчика. Отвечай на русском языке, будь дружелюбным.`;
   }
@@ -44,7 +103,7 @@ ${profileData.techStack.join(", ")}
 ОПЫТ РАБОТЫ:
 ${profileData.workExperience
   .map(
-    (exp) =>
+    (exp: WorkExperience) =>
       `- ${exp.company} (${exp.period}): ${exp.position}
    Достижения: ${exp.achievements.join(", ")}`,
   )
@@ -52,29 +111,31 @@ ${profileData.workExperience
 
 КЛЮЧЕВЫЕ ПРОЕКТЫ:
 ${profileData.projects
-  .map((proj) => `- ${proj.title}: ${proj.description}`)
+  .map((proj: Project) => `- ${proj.title}: ${proj.description}`)
   .join("\n")}
 
 ОБРАЗОВАНИЕ:
 ${profileData.education
   .map(
-    (edu) => `- ${edu.institution} (${edu.year}): ${edu.degree}, ${edu.field}`,
+    (edu: Education) =>
+      `- ${edu.institution} (${edu.year}): ${edu.degree}, ${edu.field}`,
   )
   .join("\n")}
 
 КУРСЫ:
 ${profileData.courses
   .map(
-    (course) => `- ${course.name} (${course.year}): ${course.specialization}`,
+    (course: Course) =>
+      `- ${course.name} (${course.year}): ${course.specialization}`,
   )
   .join("\n")}
 
 ЯЗЫКИ:
 ${profileData.languages
-  .map((lang) => `- ${lang.name}: ${lang.level}`)
+  .map((lang: Language) => `- ${lang.name}: ${lang.level}`)
   .join("\n")}
 
-ПОДХОД К РАБОТЕ:
+💡 ПОДХОД К РАБОТЕ:
 - Разработка: ${profileData.approach.development.join(", ")}
 - AI инструменты: ${profileData.approach.aiTools.join(", ")}
 
@@ -94,12 +155,6 @@ ${profileData.interests.join(", ")}
 4. Если спрашивают о контактах — предлагай связаться через форму обратной связи или Telegram
 5. Используй эмодзи для дружелюбного тона
 6. Не выдумывай то, чего нет в информации выше
-7. Если спрашивают о зарплатных ожиданиях — скажи, что обсуждаемо индивидуально
-
-Примеры ответов:
-- "Привет! 👋 Я ${profileData.hero.name}, ${profileData.hero.title}. Чем могу помочь?"
-- "Да, я работал с React более 2 лет. В проекте СмартТурбоТех мы использовали React + TypeScript для мобильного приложения с картами и геолокацией. 🚀"
-- "Связаться со мной можно через Telegram @kulikovarseniy или через форму обратной связи на этом сайте. 📧"
 `;
 };
 
@@ -112,5 +167,5 @@ export const OPENAI_CONFIG = {
 
 console.log(`Using model: ${OPENAI_CONFIG.model}`);
 console.log(
-  `System prompt will be injected with real profile data at request time`,
+  `system prompt will be injected with real profile data at request time`,
 );
