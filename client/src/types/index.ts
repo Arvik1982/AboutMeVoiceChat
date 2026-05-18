@@ -17,3 +17,32 @@ declare global {
     SpeechRecognition: unknown;
   }
 }
+export interface ProfileData {
+  hero: {
+    name: string;
+    title: string;
+    experience: string;
+    description: string;
+    avatar: string;
+  };
+  techStack: string[];
+  projects: Project[];
+  approach: {
+    development: string[];
+    aiTools: string[];
+  };
+  social: {
+    github: string;
+    telegram: string;
+    email: string;
+  };
+}
+
+export interface Project {
+  id: number;
+  title: string;
+  description: string;
+  tags: string[];
+  github?: string;
+  demo?: string;
+}

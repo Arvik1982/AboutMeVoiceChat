@@ -3,6 +3,8 @@ import cors from "cors";
 import helmet from "helmet";
 import dotenv from "dotenv";
 import chatRoutes from "./routes/chatRoutes.js";
+import contactRoutes from "./routes/contactRoutes.js";
+import profileRoutes from "./routes/profileRoutes.js";
 import { errorHandler } from "./middlewares/errorHandler.js";
 
 dotenv.config();
@@ -17,7 +19,7 @@ const allowedOrigins = [
   "http://localhost:3000",
   "https://arvik1982.github.io",
   "https://Arvik1982.github.io",
-  "https://chat-app-gh6n.onrender.com",
+  "https://about-me-api.onrender.com",
   process.env.FRONTEND_URL,
 ].filter(Boolean);
 
@@ -48,7 +50,7 @@ app.use(express.json());
 app.get("/", (req, res) => {
   res.json({
     status: "ok",
-    message: "ChatGPT API is running",
+    message: "About Me API is running",
     corsAllowed: allowedOrigins,
   });
 });
@@ -58,6 +60,8 @@ app.get("/health", (req, res) => {
 });
 
 app.use("/api", chatRoutes);
+app.use("/api", contactRoutes);
+app.use("/api", profileRoutes);
 
 app.use((req, res) => {
   res.status(404).json({ error: "Endpoint not found" });
@@ -68,5 +72,6 @@ app.use(errorHandler);
 app.listen(PORT, () => {
   console.log(`Server running on http://localhost:${PORT}`);
   console.log(`API: http://localhost:${PORT}/api/chat`);
+  console.log(`Contact: http://localhost:${PORT}/api/contact`);
   console.log(`CORS allowed: ${allowedOrigins.join(", ")}`);
 });
