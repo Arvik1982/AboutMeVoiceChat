@@ -19,7 +19,8 @@ const resend =
 export interface EmailOptions {
   to: string;
   subject: string;
-  html: string;
+  text?: string;
+  html?: string;
 }
 
 export async function sendEmail(options: EmailOptions): Promise<void> {
@@ -32,17 +33,25 @@ export async function sendEmail(options: EmailOptions): Promise<void> {
     throw new Error("Email sender (from) is not configured");
   }
 
+  if (!options.text && !options.html) {
+    throw new Error("Email must have either text or html content");
+  }
+
   if (NODE_ENV === "production") {
     if (!resend) {
       throw new Error("RESEND_API_KEY is not configured");
     }
 
-    const { data, error } = await resend.emails.send({
+    const emailPayload: any = {
       from,
       to: options.to,
       subject: options.subject,
-      html: options.html,
-    });
+    };
+
+    if (options.text) emailPayload.text = options.text;
+    if (options.html) emailPayload.html = options.html;
+
+    const { data, error } = await resend.emails.send(emailPayload);
 
     if (error) {
       console.error("Resend error:", error);
@@ -53,7 +62,16 @@ export async function sendEmail(options: EmailOptions): Promise<void> {
       `Email sent via Resend (production) to: ${options.to}, id: ${data?.id}`,
     );
   } else {
-    await nodemailerTransporter.sendMail({ ...options, from });
+    const mailPayload: any = {
+      from,
+      to: options.to,
+      subject: options.subject,
+    };
+
+    if (options.text) mailPayload.text = options.text;
+    if (options.html) mailPayload.html = options.html;
+
+    await nodemailerTransporter.sendMail(mailPayload);
     console.log(`Email sent via Nodemailer (development) to: ${options.to}`);
   }
 }
