@@ -1,25 +1,11 @@
 import { Request, Response } from "express";
-import nodemailer from "nodemailer";
-
-const transporter = nodemailer.createTransport({
-  host: "smtp.gmail.com",
-  port: 465,
-  secure: true,
-  auth: {
-    user: process.env.EMAIL_USER,
-    pass: process.env.EMAIL_PASS,
-  },
-  connectionTimeout: 30000,
-  greetingTimeout: 30000,
-  socketTimeout: 30000,
-  debug: true,
-});
+import { sendEmail } from "../services/emailService.js";
 
 export const sendContactEmail = async (req: Request, res: Response) => {
   try {
     const { name, phone, email, message } = req.body;
 
-    console.log("Contact request received:", { name, email, phone });
+    console.log("📧 Contact request:", { name, email, phone });
 
     if (!name || !email || !message) {
       return res
@@ -27,36 +13,30 @@ export const sendContactEmail = async (req: Request, res: Response) => {
         .json({ error: "Name, email and message are required" });
     }
 
-    if (!process.env.EMAIL_USER || !process.env.EMAIL_PASS) {
-      console.error("Email credentials not configured");
-      return res.status(500).json({ error: "Email service not configured" });
-    }
-
-    // Письмо владельцу
-    await transporter.sendMail({
-      from: process.env.EMAIL_USER,
-      to: process.env.EMAIL_USER,
-      subject: `📬 Новое сообщение от ${name}`,
+    // 1. Письмо владельцу
+    await sendEmail({
+      to: process.env.EMAIL_USER!,
+      subject: `New message from ${name}`,
       html: `
-        <h2>Новое сообщение с сайта</h2>
-        <p><strong>Имя:</strong> ${name}</p>
-        <p><strong>Телефон:</strong> ${phone || "Не указан"}</p>
+        <h2>New message from your portfolio</h2>
+        <p><strong>Name:</strong> ${name}</p>
+        <p><strong>Phone:</strong> ${phone || "Not provided"}</p>
         <p><strong>Email:</strong> ${email}</p>
-        <p><strong>Сообщение:</strong></p>
+        <p><strong>Message:</strong></p>
         <p>${message}</p>
       `,
     });
 
-    // Копия пользователю
-    await transporter.sendMail({
-      from: process.env.EMAIL_USER,
+    // 2. Копия пользователю
+    await sendEmail({
       to: email,
-      subject: "📧 Копия вашего сообщения",
+      subject: "Copy of your message",
       html: `
-        <h2>Спасибо за ваше сообщение!</h2>
-        <p>Это копия вашего сообщения:</p>
+        <h2>Thank you for your message!</h2>
+        <p>This is a copy of your message:</p>
         <p>${message}</p>
-        <p>Я свяжусь с вами в ближайшее время.</p>
+        <br/>
+        <p>I will contact you soon.</p>
       `,
     });
 
@@ -64,15 +44,8 @@ export const sendContactEmail = async (req: Request, res: Response) => {
     res.json({ success: true, message: "Email sent successfully" });
   } catch (error: any) {
     console.error("Email error:", error);
-
-    if (error.code === "EAUTH") {
-      res.status(500).json({ error: "Email authentication failed" });
-    } else if (error.code === "ETIMEDOUT") {
-      res
-        .status(500)
-        .json({ error: "Connection timeout. Please try again later." });
-    } else {
-      res.status(500).json({ error: error.message || "Failed to send email" });
-    }
+    res
+      .status(500)
+      .json({ error: "Failed to send email. Please try again later." });
   }
 };
