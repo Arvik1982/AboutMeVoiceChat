@@ -10,7 +10,8 @@ export function useSpeechRecognition() {
   const silenceTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const restartTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  // Функция для полной очистки таймеров
+  const recentPhrasesRef = useRef<string[]>([]);
+
   const clearAllTimeouts = useCallback(() => {
     if (timeoutRef.current) {
       clearTimeout(timeoutRef.current);
@@ -62,12 +63,14 @@ export function useSpeechRecognition() {
     recognition.maxAlternatives = 1;
 
     recognition.onstart = () => {
-      console.log("🎤 Speech recognition started");
+      console.log("Speech recognition started");
       setIsListening(true);
+
+      recentPhrasesRef.current = [];
     };
 
     recognition.onresult = (event: any) => {
-      let currentFinalText = "";
+      let newFinalText = "";
       let currentInterimText = "";
 
       if (silenceTimeoutRef.current) {
@@ -77,23 +80,37 @@ export function useSpeechRecognition() {
 
       for (let i = event.resultIndex; i < event.results.length; i++) {
         const result = event.results[i];
-        const text = result[0].transcript;
+        const text = result[0].transcript.trim();
 
         if (result.isFinal) {
-          currentFinalText += text;
+          newFinalText += text;
         } else {
           currentInterimText += text;
         }
       }
 
-      if (currentFinalText && currentFinalText !== lastFinalTextRef.current) {
-        lastFinalTextRef.current = currentFinalText;
-        setTranscript((prev) => {
-          const newText = prev
-            ? `${prev} ${currentFinalText}`
-            : currentFinalText;
-          return newText;
-        });
+      if (newFinalText) {
+        const phrases = newFinalText
+          .split(/[.!?;،،\n]+/)
+          .filter((p) => p.trim().length > 0);
+
+        for (const phrase of phrases) {
+          const trimmedPhrase = phrase.trim();
+
+          if (
+            trimmedPhrase &&
+            !recentPhrasesRef.current.includes(trimmedPhrase)
+          ) {
+            recentPhrasesRef.current.push(trimmedPhrase);
+
+            setTranscript((prev) => {
+              const newText = prev ? `${prev} ${trimmedPhrase}` : trimmedPhrase;
+              return newText;
+            });
+
+            lastFinalTextRef.current = trimmedPhrase;
+          }
+        }
 
         silenceTimeoutRef.current = setTimeout(() => {
           if (recognitionRef.current) {
@@ -112,7 +129,7 @@ export function useSpeechRecognition() {
     };
 
     recognition.onend = () => {
-      console.log("🎤 Speech recognition ended");
+      console.log("Speech recognition ended");
       setIsListening(false);
       clearAllTimeouts();
     };
@@ -145,10 +162,8 @@ export function useSpeechRecognition() {
       return;
     }
 
-    // Очищаем всё перед запуском
     clearAllTimeouts();
 
-    // Останавливаем текущую сессию, если есть
     if (recognitionRef.current) {
       try {
         recognitionRef.current.abort();
@@ -159,14 +174,13 @@ export function useSpeechRecognition() {
 
     setTranscript("");
     lastFinalTextRef.current = "";
+    recentPhrasesRef.current = [];
 
-    // Небольшая задержка перед запуском (важно для стабильности)
     restartTimeoutRef.current = setTimeout(() => {
       if (recognitionRef.current) {
         try {
           recognitionRef.current.start();
 
-          // Общий таймаут 30 секунд
           timeoutRef.current = setTimeout(() => {
             if (recognitionRef.current && isListening) {
               try {
