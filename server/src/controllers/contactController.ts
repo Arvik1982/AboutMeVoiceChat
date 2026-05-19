@@ -32,8 +32,13 @@ export const sendContactEmail = async (req: Request, res: Response) => {
     // 2. Копия пользователю
     await sendEmail({
       to: email,
-      subject: "Копия вашего сообщения",
-      text: `Спасибо за ваше сообщение!\n\nЭто копия:\n\n${message}\n\nЯ свяжусь с вами в ближайшее время.\n\n---\nС уважением,\nАрсений Куликов`,
+      subject: "We received your message",
+      text: `Hello ${name || ""},
+
+Thank you for your message. I have received it and will get back to you soon.
+
+Best regards,
+Arseny`,
     });
 
     console.log("Both emails sent successfully");
