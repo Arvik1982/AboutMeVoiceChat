@@ -1,73 +1,141 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 
+interface SpeechRecognitionConstructor {
+  new (): any;
+}
+
 export function useSpeechRecognition() {
   const [isListening, setIsListening] = useState(false);
   const [transcript, setTranscript] = useState("");
   const [isSupported, setIsSupported] = useState(true);
   const recognitionRef = useRef<any>(null);
+  const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const lastFinalTextRef = useRef<string>("");
 
   useEffect(() => {
-    const SpeechRecognition =
-      window.SpeechRecognition || window.webkitSpeechRecognition;
+    const SpeechRecognitionAPI = (window.SpeechRecognition ||
+      window.webkitSpeechRecognition) as
+      | SpeechRecognitionConstructor
+      | undefined;
 
-    if (!SpeechRecognition) {
+    if (!SpeechRecognitionAPI) {
+      console.warn("SpeechRecognition API not supported");
       setIsSupported(false);
       return;
     }
 
-    const recognition = new SpeechRecognition();
+    let recognition: any;
+    try {
+      recognition = new SpeechRecognitionAPI();
+    } catch (err) {
+      console.error("Failed to construct SpeechRecognition:", err);
+      setIsSupported(false);
+      return;
+    }
+
     recognition.continuous = true;
     recognition.interimResults = true;
     recognition.lang = "ru-RU";
+    recognition.maxAlternatives = 1;
 
     recognition.onresult = (event: any) => {
-      let finalText = "";
+      let currentFinalText = "";
+      let currentInterimText = "";
 
       for (let i = event.resultIndex; i < event.results.length; i++) {
         const result = event.results[i];
         const text = result[0].transcript;
 
         if (result.isFinal) {
-          finalText += text;
+          currentFinalText += text;
+        } else {
+          currentInterimText += text;
         }
       }
 
-      if (finalText) {
-        setTranscript((prev) => prev + (prev ? " " : "") + finalText);
-
-        recognition.stop();
+      if (currentFinalText && currentFinalText !== lastFinalTextRef.current) {
+        lastFinalTextRef.current = currentFinalText;
+        setTranscript((prev) => {
+          const newText = prev
+            ? `${prev} ${currentFinalText}`
+            : currentFinalText;
+          return newText;
+        });
       }
     };
 
     recognition.onend = () => {
       setIsListening(false);
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+        timeoutRef.current = null;
+      }
     };
 
     recognition.onerror = (event: any) => {
       console.error("Speech recognition error:", event.error);
       setIsListening(false);
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+        timeoutRef.current = null;
+      }
     };
 
     recognitionRef.current = recognition;
 
     return () => {
       if (recognitionRef.current) {
-        recognitionRef.current.abort();
+        try {
+          recognitionRef.current.abort();
+        } catch (e) {}
+      }
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
       }
     };
   }, []);
 
   const startListening = useCallback(() => {
-    if (!recognitionRef.current) return;
+    if (!recognitionRef.current) {
+      console.warn("Speech recognition not available");
+      return;
+    }
+
+    try {
+      recognitionRef.current.abort();
+    } catch (e) {}
 
     setTranscript("");
+    lastFinalTextRef.current = "";
     setIsListening(true);
-    recognitionRef.current.start();
-  }, []);
+
+    try {
+      recognitionRef.current.start();
+
+      timeoutRef.current = setTimeout(() => {
+        if (recognitionRef.current && isListening) {
+          try {
+            recognitionRef.current.stop();
+          } catch (e) {}
+        }
+      }, 15000);
+    } catch (error) {
+      console.error("Failed to start recognition:", error);
+      setIsListening(false);
+    }
+  }, [isListening]);
 
   const stopListening = useCallback(() => {
     if (recognitionRef.current && isListening) {
-      recognitionRef.current.stop();
+      try {
+        recognitionRef.current.stop();
+      } catch (error) {
+        console.error("Failed to stop recognition:", error);
+      }
+    }
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current);
+      timeoutRef.current = null;
     }
   }, [isListening]);
 
