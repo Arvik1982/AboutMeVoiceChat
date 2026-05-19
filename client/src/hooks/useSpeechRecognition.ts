@@ -1,9 +1,5 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 
-interface SpeechRecognitionConstructor {
-  new (): any;
-}
-
 export function useSpeechRecognition() {
   const [isListening, setIsListening] = useState(false);
   const [transcript, setTranscript] = useState("");
@@ -13,10 +9,14 @@ export function useSpeechRecognition() {
   const lastFinalTextRef = useRef<string>("");
 
   useEffect(() => {
-    const SpeechRecognitionAPI = (window.SpeechRecognition ||
-      window.webkitSpeechRecognition) as
-      | SpeechRecognitionConstructor
-      | undefined;
+    if (typeof window === "undefined") {
+      setIsSupported(false);
+      return;
+    }
+
+    const SpeechRecognitionAPI =
+      (window as any).SpeechRecognition ||
+      (window as any).webkitSpeechRecognition;
 
     if (!SpeechRecognitionAPI) {
       console.warn("SpeechRecognition API not supported");
@@ -24,7 +24,7 @@ export function useSpeechRecognition() {
       return;
     }
 
-    let recognition: any;
+    let recognition: any = null;
     try {
       recognition = new SpeechRecognitionAPI();
     } catch (err) {
@@ -33,6 +33,12 @@ export function useSpeechRecognition() {
       return;
     }
 
+    if (!recognition) {
+      setIsSupported(false);
+      return;
+    }
+
+    // Настройки
     recognition.continuous = true;
     recognition.interimResults = true;
     recognition.lang = "ru-RU";
@@ -62,6 +68,10 @@ export function useSpeechRecognition() {
           return newText;
         });
       }
+
+      if (currentInterimText) {
+        console.debug("Interim transcript:", currentInterimText);
+      }
     };
 
     recognition.onend = () => {
@@ -87,7 +97,9 @@ export function useSpeechRecognition() {
       if (recognitionRef.current) {
         try {
           recognitionRef.current.abort();
-        } catch (e) {}
+        } catch {
+          // Игнорируем ошибки при очистке
+        }
       }
       if (timeoutRef.current) {
         clearTimeout(timeoutRef.current);
@@ -103,7 +115,9 @@ export function useSpeechRecognition() {
 
     try {
       recognitionRef.current.abort();
-    } catch (e) {}
+    } catch {
+      // Игнорируем ошибки
+    }
 
     setTranscript("");
     lastFinalTextRef.current = "";
@@ -116,7 +130,9 @@ export function useSpeechRecognition() {
         if (recognitionRef.current && isListening) {
           try {
             recognitionRef.current.stop();
-          } catch (e) {}
+          } catch {
+            // Игнорируем ошибки
+          }
         }
       }, 15000);
     } catch (error) {
