@@ -32,7 +32,7 @@ export const sendContactEmail = async (req: Request, res: Response) => {
     // 2. Копия пользователю
     await sendEmail({
       to: email,
-      subject: `Новое сообщение от ${name}`,
+      subject: `${name}, мы получили ваше письмо`,
       text: `Привет! ${name || ""},
 
 Спасибо за ваше письмо. Я его получил и в ближайшее время дам на него ответ.
