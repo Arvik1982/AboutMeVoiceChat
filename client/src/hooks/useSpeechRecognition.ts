@@ -8,6 +8,23 @@ export function useSpeechRecognition() {
   const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const lastFinalTextRef = useRef<string>("");
   const silenceTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const restartTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  // Функция для полной очистки таймеров
+  const clearAllTimeouts = useCallback(() => {
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current);
+      timeoutRef.current = null;
+    }
+    if (silenceTimeoutRef.current) {
+      clearTimeout(silenceTimeoutRef.current);
+      silenceTimeoutRef.current = null;
+    }
+    if (restartTimeoutRef.current) {
+      clearTimeout(restartTimeoutRef.current);
+      restartTimeoutRef.current = null;
+    }
+  }, []);
 
   useEffect(() => {
     if (typeof window === "undefined") {
@@ -44,6 +61,11 @@ export function useSpeechRecognition() {
     recognition.lang = "ru-RU";
     recognition.maxAlternatives = 1;
 
+    recognition.onstart = () => {
+      console.log("🎤 Speech recognition started");
+      setIsListening(true);
+    };
+
     recognition.onresult = (event: any) => {
       let currentFinalText = "";
       let currentInterimText = "";
@@ -74,7 +96,7 @@ export function useSpeechRecognition() {
         });
 
         silenceTimeoutRef.current = setTimeout(() => {
-          if (recognitionRef.current && isListening) {
+          if (recognitionRef.current) {
             try {
               recognitionRef.current.stop();
             } catch (stopError) {
@@ -90,28 +112,15 @@ export function useSpeechRecognition() {
     };
 
     recognition.onend = () => {
+      console.log("🎤 Speech recognition ended");
       setIsListening(false);
-      if (timeoutRef.current) {
-        clearTimeout(timeoutRef.current);
-        timeoutRef.current = null;
-      }
-      if (silenceTimeoutRef.current) {
-        clearTimeout(silenceTimeoutRef.current);
-        silenceTimeoutRef.current = null;
-      }
+      clearAllTimeouts();
     };
 
     recognition.onerror = (event: any) => {
       console.error("Speech recognition error:", event.error);
       setIsListening(false);
-      if (timeoutRef.current) {
-        clearTimeout(timeoutRef.current);
-        timeoutRef.current = null;
-      }
-      if (silenceTimeoutRef.current) {
-        clearTimeout(silenceTimeoutRef.current);
-        silenceTimeoutRef.current = null;
-      }
+      clearAllTimeouts();
     };
 
     recognitionRef.current = recognition;
@@ -122,21 +131,13 @@ export function useSpeechRecognition() {
           recognitionRef.current.abort();
         } catch (abortError) {
           if (abortError instanceof Error && abortError.name !== "AbortError") {
-            console.debug(
-              "Cleanup abort error (non-critical):",
-              abortError.message,
-            );
+            console.debug("Cleanup abort error:", abortError.message);
           }
         }
       }
-      if (timeoutRef.current) {
-        clearTimeout(timeoutRef.current);
-      }
-      if (silenceTimeoutRef.current) {
-        clearTimeout(silenceTimeoutRef.current);
-      }
+      clearAllTimeouts();
     };
-  }, [isListening]);
+  }, [clearAllTimeouts]);
 
   const startListening = useCallback(() => {
     if (!recognitionRef.current) {
@@ -144,51 +145,56 @@ export function useSpeechRecognition() {
       return;
     }
 
-    try {
-      recognitionRef.current.abort();
-    } catch (abortError) {
-      console.debug("Abort before start error:", abortError);
+    // Очищаем всё перед запуском
+    clearAllTimeouts();
+
+    // Останавливаем текущую сессию, если есть
+    if (recognitionRef.current) {
+      try {
+        recognitionRef.current.abort();
+      } catch (abortError) {
+        console.debug("Abort before start error:", abortError);
+      }
     }
 
     setTranscript("");
     lastFinalTextRef.current = "";
-    setIsListening(true);
 
-    try {
-      recognitionRef.current.start();
+    // Небольшая задержка перед запуском (важно для стабильности)
+    restartTimeoutRef.current = setTimeout(() => {
+      if (recognitionRef.current) {
+        try {
+          recognitionRef.current.start();
 
-      timeoutRef.current = setTimeout(() => {
-        if (recognitionRef.current && isListening) {
-          try {
-            recognitionRef.current.stop();
-          } catch (stopError) {
-            console.debug("Timeout stop error:", stopError);
-          }
+          // Общий таймаут 30 секунд
+          timeoutRef.current = setTimeout(() => {
+            if (recognitionRef.current && isListening) {
+              try {
+                recognitionRef.current.stop();
+              } catch (stopError) {
+                console.debug("Timeout stop error:", stopError);
+              }
+            }
+          }, 30000);
+        } catch (startError) {
+          console.error("Failed to start recognition:", startError);
+          setIsListening(false);
         }
-      }, 15000);
-    } catch (startError) {
-      console.error("Failed to start recognition:", startError);
-      setIsListening(false);
-    }
-  }, [isListening]);
+      }
+    }, 100);
+  }, [clearAllTimeouts, isListening]);
 
   const stopListening = useCallback(() => {
-    if (recognitionRef.current && isListening) {
+    if (recognitionRef.current) {
       try {
         recognitionRef.current.stop();
       } catch (stopError) {
         console.error("Failed to stop recognition:", stopError);
       }
     }
-    if (timeoutRef.current) {
-      clearTimeout(timeoutRef.current);
-      timeoutRef.current = null;
-    }
-    if (silenceTimeoutRef.current) {
-      clearTimeout(silenceTimeoutRef.current);
-      silenceTimeoutRef.current = null;
-    }
-  }, [isListening]);
+    clearAllTimeouts();
+    setIsListening(false);
+  }, [clearAllTimeouts]);
 
   return {
     isListening,
