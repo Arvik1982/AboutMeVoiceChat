@@ -38,7 +38,10 @@ export const sendContactEmail = async (req: Request, res: Response) => {
 Thank you for your message. I have received it and will get back to you soon.
 
 Best regards,
-Arseny`,
+Arseny
+
+***
+${message}`,
     });
 
     console.log("Both emails sent successfully");
