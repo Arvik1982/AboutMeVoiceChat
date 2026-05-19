@@ -39,7 +39,6 @@ export function useSpeechRecognition() {
       return;
     }
 
-    // Настройки
     recognition.continuous = true;
     recognition.interimResults = true;
     recognition.lang = "ru-RU";
@@ -49,7 +48,6 @@ export function useSpeechRecognition() {
       let currentFinalText = "";
       let currentInterimText = "";
 
-      // При получении любого результата — сбрасываем таймер тишины
       if (silenceTimeoutRef.current) {
         clearTimeout(silenceTimeoutRef.current);
         silenceTimeoutRef.current = null;
@@ -75,7 +73,6 @@ export function useSpeechRecognition() {
           return newText;
         });
 
-        // После получения финального текста — запускаем таймер на остановку через 2 секунды
         silenceTimeoutRef.current = setTimeout(() => {
           if (recognitionRef.current && isListening) {
             try {
@@ -121,8 +118,10 @@ export function useSpeechRecognition() {
       if (recognitionRef.current) {
         try {
           recognitionRef.current.abort();
-        } catch {
-          // Игнорируем ошибки при очистке
+        } catch (error) {
+          if (error instanceof Error && error.name !== "AbortError") {
+            console.debug("Cleanup abort error (non-critical):", error.message);
+          }
         }
       }
       if (timeoutRef.current) {
@@ -153,7 +152,6 @@ export function useSpeechRecognition() {
     try {
       recognitionRef.current.start();
 
-      // Общий таймаут 15 секунд (максимальная длительность записи)
       timeoutRef.current = setTimeout(() => {
         if (recognitionRef.current && isListening) {
           try {
