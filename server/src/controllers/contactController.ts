@@ -5,7 +5,7 @@ export const sendContactEmail = async (req: Request, res: Response) => {
   try {
     const { name, phone, email, message } = req.body;
 
-    console.log("📧 Contact request:", { name, email, phone });
+    console.log("Contact request:", { name, email, phone });
 
     if (!name || !email || !message) {
       return res
