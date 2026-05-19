@@ -7,6 +7,7 @@ export function useSpeechRecognition() {
   const recognitionRef = useRef<any>(null);
   const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const lastFinalTextRef = useRef<string>("");
+  const silenceTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
     if (typeof window === "undefined") {
@@ -48,6 +49,12 @@ export function useSpeechRecognition() {
       let currentFinalText = "";
       let currentInterimText = "";
 
+      // При получении любого результата — сбрасываем таймер тишины
+      if (silenceTimeoutRef.current) {
+        clearTimeout(silenceTimeoutRef.current);
+        silenceTimeoutRef.current = null;
+      }
+
       for (let i = event.resultIndex; i < event.results.length; i++) {
         const result = event.results[i];
         const text = result[0].transcript;
@@ -67,6 +74,15 @@ export function useSpeechRecognition() {
             : currentFinalText;
           return newText;
         });
+
+        // После получения финального текста — запускаем таймер на остановку через 2 секунды
+        silenceTimeoutRef.current = setTimeout(() => {
+          if (recognitionRef.current && isListening) {
+            try {
+              recognitionRef.current.stop();
+            } catch (e) {}
+          }
+        }, 2000);
       }
 
       if (currentInterimText) {
@@ -80,6 +96,10 @@ export function useSpeechRecognition() {
         clearTimeout(timeoutRef.current);
         timeoutRef.current = null;
       }
+      if (silenceTimeoutRef.current) {
+        clearTimeout(silenceTimeoutRef.current);
+        silenceTimeoutRef.current = null;
+      }
     };
 
     recognition.onerror = (event: any) => {
@@ -88,6 +108,10 @@ export function useSpeechRecognition() {
       if (timeoutRef.current) {
         clearTimeout(timeoutRef.current);
         timeoutRef.current = null;
+      }
+      if (silenceTimeoutRef.current) {
+        clearTimeout(silenceTimeoutRef.current);
+        silenceTimeoutRef.current = null;
       }
     };
 
@@ -104,8 +128,11 @@ export function useSpeechRecognition() {
       if (timeoutRef.current) {
         clearTimeout(timeoutRef.current);
       }
+      if (silenceTimeoutRef.current) {
+        clearTimeout(silenceTimeoutRef.current);
+      }
     };
-  }, []);
+  }, [isListening]);
 
   const startListening = useCallback(() => {
     if (!recognitionRef.current) {
@@ -126,6 +153,7 @@ export function useSpeechRecognition() {
     try {
       recognitionRef.current.start();
 
+      // Общий таймаут 15 секунд (максимальная длительность записи)
       timeoutRef.current = setTimeout(() => {
         if (recognitionRef.current && isListening) {
           try {
@@ -152,6 +180,10 @@ export function useSpeechRecognition() {
     if (timeoutRef.current) {
       clearTimeout(timeoutRef.current);
       timeoutRef.current = null;
+    }
+    if (silenceTimeoutRef.current) {
+      clearTimeout(silenceTimeoutRef.current);
+      silenceTimeoutRef.current = null;
     }
   }, [isListening]);
 
