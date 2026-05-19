@@ -77,7 +77,9 @@ export function useSpeechRecognition() {
           if (recognitionRef.current && isListening) {
             try {
               recognitionRef.current.stop();
-            } catch (e) {}
+            } catch (stopError) {
+              console.debug("Silence stop error:", stopError);
+            }
           }
         }, 2000);
       }
@@ -118,9 +120,12 @@ export function useSpeechRecognition() {
       if (recognitionRef.current) {
         try {
           recognitionRef.current.abort();
-        } catch (error) {
-          if (error instanceof Error && error.name !== "AbortError") {
-            console.debug("Cleanup abort error (non-critical):", error.message);
+        } catch (abortError) {
+          if (abortError instanceof Error && abortError.name !== "AbortError") {
+            console.debug(
+              "Cleanup abort error (non-critical):",
+              abortError.message,
+            );
           }
         }
       }
@@ -141,8 +146,8 @@ export function useSpeechRecognition() {
 
     try {
       recognitionRef.current.abort();
-    } catch {
-      // Игнорируем ошибки
+    } catch (abortError) {
+      console.debug("Abort before start error:", abortError);
     }
 
     setTranscript("");
@@ -156,13 +161,13 @@ export function useSpeechRecognition() {
         if (recognitionRef.current && isListening) {
           try {
             recognitionRef.current.stop();
-          } catch {
-            // Игнорируем ошибки
+          } catch (stopError) {
+            console.debug("Timeout stop error:", stopError);
           }
         }
       }, 15000);
-    } catch (error) {
-      console.error("Failed to start recognition:", error);
+    } catch (startError) {
+      console.error("Failed to start recognition:", startError);
       setIsListening(false);
     }
   }, [isListening]);
@@ -171,8 +176,8 @@ export function useSpeechRecognition() {
     if (recognitionRef.current && isListening) {
       try {
         recognitionRef.current.stop();
-      } catch (error) {
-        console.error("Failed to stop recognition:", error);
+      } catch (stopError) {
+        console.error("Failed to stop recognition:", stopError);
       }
     }
     if (timeoutRef.current) {
