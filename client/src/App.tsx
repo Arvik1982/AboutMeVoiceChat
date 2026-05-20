@@ -44,6 +44,8 @@ function App() {
         social={profile.social}
       />
 
+      <AiAssistant />
+
       <TechStack items={profile.techStack} />
 
       <Projects projects={profile.projects} />
@@ -57,7 +59,6 @@ function App() {
         <h2>Связаться со мной</h2>
         <ContactForm />
       </section>
-      <AiAssistant />
     </div>
   );
 }
