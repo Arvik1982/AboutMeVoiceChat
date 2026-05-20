@@ -4,14 +4,15 @@ const profileData = {
   hero: {
     name: "Арсений Куликов",
     title: "Frontend-разработчик React/React Native",
-    experience: "Опыт работы: 19 лет 11 месяцев",
+    experience:
+      "Общий опыт работы в ИТ: 19 лет 11 месяцев из них разработчиком 2 года 8 месяцев",
     description:
       "Специалист по созданию SPA на React, мобильных приложений на React Native. Разрабатывал приложения для iOS и Android с интеграцией платежей, карт и облачных сервисов.",
     avatar: "👨‍💻",
     birthDate: "15 ноября 1982",
     age: 43,
     location: "Санкт-Петербург",
-    relocation: "Готов к переезду в Москву",
+    relocation: "Готов к переезду",
     citizenship: "Россия",
   },
   contacts: {

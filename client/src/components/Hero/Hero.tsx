@@ -1,6 +1,6 @@
 import React from "react";
 import styles from "./Hero.module.css";
-import { Github, Send, Mail } from "lucide-react";
+import { Github, Send } from "lucide-react";
 
 interface HeroProps {
   name: string;
