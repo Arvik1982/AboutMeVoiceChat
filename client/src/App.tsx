@@ -1,16 +1,10 @@
-import React, { useState, useEffect, useRef } from "react";
-import { ArrowRight, MessageCircle } from "lucide-react";
 import styles from "./App.module.css";
 import { Hero } from "./components/Hero/Hero";
 import { TechStack } from "./components/TechStack/TechStack";
 import { Projects } from "./components/Projects/Projects";
 import { Approach } from "./components/Approach/Approach";
 import { ContactForm } from "./components/ContactForm/ContactForm";
-import { MessageBubble } from "./components/MessageBubble/MessageBubble";
 import { LoadingDots } from "./components/LoadingDots/LoadingDots";
-import { VoiceButton } from "./components/VoiceButton/VoiceButton";
-import { useChat } from "./hooks/useChat";
-import { useSpeechRecognition } from "./hooks/useSpeechRecognition";
 import { useProfile } from "./hooks/useProfile";
 import AiAssistant from "./components/AiAssistant/AiAssistant";
 
