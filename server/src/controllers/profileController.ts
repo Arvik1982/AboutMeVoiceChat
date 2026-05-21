@@ -17,7 +17,7 @@ const profileData = {
   },
   contacts: {
     phone: "+7 (911) 756-62-63",
-    email: "kulikovarseniy@gmail.com",
+    email: "phone.kulikovarseniy@gmail.com",
     telegram: "https://t.me/kulikovarseniy",
     github: "https://github.com/Arvik1982",
     setka: "https://set.k/account/UoxSwzu",
