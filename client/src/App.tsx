@@ -17,7 +17,7 @@ function App() {
 
   if (isProfileLoading) {
     return (
-      <div className={styles.app_load}>
+      <div className={styles.app}>
         <LoadingDots />
       </div>
     );
@@ -25,7 +25,7 @@ function App() {
 
   if (profileError || !profile) {
     return (
-      <div className={styles.app_load}>
+      <div className={styles.app}>
         <div className={styles.error}>
           Failed to load profile data. Please refresh the page.
         </div>
