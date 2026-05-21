@@ -17,7 +17,7 @@ function App() {
 
   if (isProfileLoading) {
     return (
-      <div className={styles.app}>
+      <div className={styles.app_load}>
         <LoadingDots />
       </div>
     );
