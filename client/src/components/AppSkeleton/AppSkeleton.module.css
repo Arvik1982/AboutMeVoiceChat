@@ -1,0 +1,296 @@
+.app {
+  min-height: 100vh;
+  background: #0d3576;
+  color: white;
+  padding-bottom: 40px;
+}
+
+/* Анимация пульсации */
+@keyframes pulse {
+  0% {
+    opacity: 0.4;
+  }
+  50% {
+    opacity: 0.7;
+  }
+  100% {
+    opacity: 0.4;
+  }
+}
+
+/* Общие стили для скелетонов */
+.avatarSkeleton,
+.titleSkeleton,
+.textSkeleton,
+.textSkeletonShort,
+.textSkeletonMedium,
+.socialIcon,
+.sectionTitleSkeleton,
+.stackItemSkeleton,
+.projectTitleSkeleton,
+.projectTextSkeleton,
+.projectTextSkeletonShort,
+.tagSkeleton,
+.cardTitleSkeleton,
+.listItemSkeleton,
+.listItemSkeletonShort,
+.inputSkeleton,
+.textareaSkeleton,
+.buttonSkeleton,
+.chatHeaderSkeleton,
+.messagesSkeleton,
+.promptSkeleton {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  animation: pulse 1.5s ease-in-out infinite;
+}
+
+/* Hero Skeleton */
+.hero {
+  text-align: center;
+  padding: 60px 20px 40px;
+}
+
+.avatarSkeleton {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  margin: 0 auto 16px;
+  background: rgba(255, 255, 255, 0.15);
+}
+
+.titleSkeleton {
+  width: 250px;
+  height: 48px;
+  margin: 0 auto 8px;
+  border-radius: 12px;
+}
+
+.textSkeleton {
+  width: 300px;
+  height: 20px;
+  margin: 8px auto;
+  border-radius: 10px;
+}
+
+.textSkeletonShort {
+  width: 200px;
+  height: 16px;
+  margin: 0 auto 16px;
+  border-radius: 8px;
+}
+
+.textSkeletonMedium {
+  width: 500px;
+  height: 20px;
+  margin: 0 auto;
+  border-radius: 10px;
+}
+
+.socialSkeleton {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+  margin-top: 24px;
+}
+
+.socialIcon {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+}
+
+/* AiAssistant Skeleton */
+.aiAssistantSkeleton {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.chatHeaderSkeleton {
+  width: 200px;
+  height: 28px;
+  margin: 0 auto 32px;
+  border-radius: 14px;
+}
+
+.messagesSkeleton {
+  height: 300px;
+  border-radius: 20px;
+  margin-bottom: 20px;
+}
+
+.promptSkeleton {
+  height: 60px;
+  border-radius: 60px;
+}
+
+/* Общий section */
+.section {
+  padding: 40px 20px;
+  max-width: 1000px;
+  margin: 0 auto;
+}
+
+.sectionTitleSkeleton {
+  width: 250px;
+  height: 32px;
+  margin: 0 auto 24px;
+  border-radius: 16px;
+}
+
+/* TechStack Skeleton */
+.stackSkeleton {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 12px;
+}
+
+.stackItemSkeleton {
+  width: 80px;
+  height: 36px;
+  border-radius: 20px;
+}
+
+/* Projects Skeleton */
+.projectsSkeleton {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 24px;
+}
+
+.projectCardSkeleton {
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 16px;
+  padding: 24px;
+}
+
+.projectTitleSkeleton {
+  width: 70%;
+  height: 24px;
+  margin-bottom: 12px;
+  border-radius: 12px;
+}
+
+.projectTextSkeleton {
+  width: 100%;
+  height: 14px;
+  margin-bottom: 8px;
+  border-radius: 7px;
+}
+
+.projectTextSkeletonShort {
+  width: 80%;
+  height: 14px;
+  margin-bottom: 16px;
+  border-radius: 7px;
+}
+
+.tagsSkeleton {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.tagSkeleton {
+  width: 60px;
+  height: 24px;
+  border-radius: 12px;
+}
+
+/* Approach Skeleton */
+.cardsSkeleton {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 24px;
+}
+
+.cardSkeleton {
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 16px;
+  padding: 24px;
+}
+
+.cardTitleSkeleton {
+  width: 60%;
+  height: 24px;
+  margin-bottom: 16px;
+  border-radius: 12px;
+}
+
+.cardListSkeleton {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.listItemSkeleton {
+  width: 90%;
+  height: 20px;
+  border-radius: 10px;
+}
+
+.listItemSkeletonShort {
+  width: 70%;
+  height: 20px;
+  border-radius: 10px;
+}
+
+/* Contact Form Skeleton */
+.formSkeleton {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  background: rgba(255, 255, 255, 0.05);
+  padding: 24px;
+  border-radius: 16px;
+}
+
+.inputSkeleton {
+  height: 48px;
+  border-radius: 8px;
+}
+
+.textareaSkeleton {
+  height: 100px;
+  border-radius: 8px;
+}
+
+.buttonSkeleton {
+  height: 48px;
+  border-radius: 8px;
+  width: 100%;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .hero {
+    padding: 40px 20px;
+  }
+
+  .titleSkeleton {
+    width: 200px;
+    height: 36px;
+  }
+
+  .textSkeletonMedium {
+    width: 90%;
+  }
+
+  .projectsSkeleton {
+    grid-template-columns: 1fr;
+  }
+
+  .cardsSkeleton {
+    grid-template-columns: 1fr;
+  }
+
+  .section {
+    padding: 30px 20px;
+  }
+
+  .sectionTitleSkeleton {
+    height: 28px;
+  }
+}

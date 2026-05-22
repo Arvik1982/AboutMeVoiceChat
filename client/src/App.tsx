@@ -4,9 +4,9 @@ import { TechStack } from "./components/TechStack/TechStack";
 import { Projects } from "./components/Projects/Projects";
 import { Approach } from "./components/Approach/Approach";
 import { ContactForm } from "./components/ContactForm/ContactForm";
-import { LoadingDots } from "./components/LoadingDots/LoadingDots";
 import { useProfile } from "./hooks/useProfile";
 import AiAssistant from "./components/AiAssistant/AiAssistant";
+import { AppSkeleton } from "./components/AppSkeleton/AppSkeleton";
 
 function App() {
   const {
@@ -16,11 +16,7 @@ function App() {
   } = useProfile();
 
   if (isProfileLoading) {
-    return (
-      <div className={styles.app_load}>
-        <LoadingDots />
-      </div>
-    );
+    return <AppSkeleton />;
   }
 
   if (profileError || !profile) {
