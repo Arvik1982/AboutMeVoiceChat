@@ -1,5 +1,6 @@
 import nodemailer from "nodemailer";
 import { Resend } from "resend";
+import { EmailOptions } from "../types";
 
 const NODE_ENV = process.env.NODE_ENV || "development";
 
@@ -15,13 +16,6 @@ const resend =
   NODE_ENV === "production" && process.env.RESEND_API_KEY
     ? new Resend(process.env.RESEND_API_KEY)
     : null;
-
-export interface EmailOptions {
-  to: string;
-  subject: string;
-  text?: string;
-  html?: string;
-}
 
 export async function sendEmail(options: EmailOptions): Promise<void> {
   const from =
