@@ -1,5 +1,13 @@
 import OpenAI from "openai";
 import dotenv from "dotenv";
+import {
+  Course,
+  Education,
+  Language,
+  ProfileData,
+  Project,
+  WorkExperience,
+} from "../types";
 
 dotenv.config();
 
@@ -16,65 +24,6 @@ export const openai = new OpenAI({
     "X-Title": "Arseniy Kulikov - Portfolio",
   },
 });
-
-interface WorkExperience {
-  company: string;
-  period: string;
-  position: string;
-  achievements: string[];
-}
-
-interface Project {
-  title: string;
-  description: string;
-}
-
-interface Education {
-  institution: string;
-  year: string;
-  degree: string;
-  field: string;
-}
-
-interface Course {
-  name: string;
-  year: string;
-  specialization: string;
-}
-
-interface Language {
-  name: string;
-  level: string;
-}
-
-interface ProfileData {
-  hero: {
-    name: string;
-    age: number;
-    birthDate: string;
-    title: string;
-    experience: string;
-    location: string;
-    relocation: string;
-  };
-  techStack: string[];
-  workExperience: WorkExperience[];
-  projects: Project[];
-  education: Education[];
-  courses: Course[];
-  languages: Language[];
-  approach: {
-    development: string[];
-    aiTools: string[];
-  };
-  interests: string[];
-  social: {
-    github: string;
-    telegram: string;
-    email: string;
-    phone: string;
-  };
-}
 
 export const generateSystemPrompt = (profileData: ProfileData): string => {
   if (!profileData) {
@@ -160,7 +109,7 @@ ${profileData.interests.join(", ")}
 
 export const OPENAI_CONFIG = {
   model: process.env.OPENROUTER_MODEL || "openrouter/free",
-  maxTokens: 700,
+  max_tokens: 700,
   temperature: 0.7,
   systemPrompt: `Ты AI ассистент на сайте-портфолио разработчика. Отвечай на русском языке, будь дружелюбным.`,
 };
