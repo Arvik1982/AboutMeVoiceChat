@@ -158,7 +158,7 @@ export const profileData = {
         "Full-stack приложение с голосовым вводом и интеграцией ChatGPT. Деплой на GitHub Pages + Render.",
       tags: ["React", "TypeScript", "Node.js", "OpenRouter", "Web Speech API"],
       github: "https://github.com/Arvik1982/chat",
-      demo: "https://arvik1982.github.io/chat",
+      demo: "https://arvik1982.github.io/AiVoiceChat",
     },
     {
       id: 3,
