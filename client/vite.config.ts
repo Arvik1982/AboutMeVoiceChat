@@ -3,7 +3,7 @@ import react from "@vitejs/plugin-react";
 
 export default defineConfig({
   plugins: [react()],
-  base: "/about-me/",
+  base: "/AboutMeVoiceChat/",
   css: {
     modules: {
       localsConvention: "camelCase",
