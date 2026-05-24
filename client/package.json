@@ -3,7 +3,7 @@
   "private": true,
   "version": "1.0.0",
   "type": "module",
-  "homepage": "https://github.com/Arvik1982/AboutMeVoiceChat",
+  "homepage": "https://Arvik1982.github.io/AboutMeVoiceChat",
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",
