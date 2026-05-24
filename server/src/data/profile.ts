@@ -174,6 +174,24 @@ export const profileData = {
         "Создание shared пакетов для монорепозитория, ведение UI библиотеки для гибридных проектов веб + мобильные.",
       tags: ["pnpm", "React", "React Native", "npm workspaces"],
     },
+    {
+      id: 5,
+      title: "Админ-панель товаров",
+      description:
+        "React 18+ TypeScript приложение для административной системы управления товарами. Реализована авторизация, таблица товаров с поиском, сортировкой, модальная форма добавления и toast-уведомления. Визуально соответствует макету Figma.",
+      tags: [
+        "React 18+ (TypeScript, Vite)",
+        "React Hook Form + Zod (формы)",
+        "Sonner (Toast уведомления)",
+        "TailwindCSS (UI/стили)",
+        "React Table (таблица + сортировка)",
+        "TODO:@tanstack/react-virtual + TanStack Table",
+        "Lucide React (иконки)",
+        "Redux + RTK Query (API + состояние)",
+      ],
+      github: "https://github.com/Arvik1982/Products",
+      demo: "https://arvik1982.github.io/Products",
+    },
   ],
   approach: {
     development: [
