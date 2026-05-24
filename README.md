@@ -4,7 +4,7 @@
 
 ## Демо
 
-[https://arvik1982.github.io/about-me](https://arvik1982.github.io/AboutMeVoiceChat)
+[https://arvik1982.github.io/AboutMeVoiceChat](https://arvik1982.github.io/AboutMeVoiceChat)
 
 ### Email-уведомления в продакшен
 
